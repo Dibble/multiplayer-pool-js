@@ -1,0 +1,28 @@
+{
+  "name": "multiplayer-pool",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "start:dev": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dibble/multiplayer-pool-js.git"
+  },
+  "author": "James Cotterell",
+  "license": "ISC",
+  "homepage": "https://github.com/Dibble/multiplayer-pool-js#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  }
+}
