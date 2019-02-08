@@ -1,4 +1,6 @@
 import { Engine, Render, World, Bodies, Mouse, Vector, Body } from 'matter-js'
+import Ball from './physics/ball'
+import { TABLE_CATEGORY, BALL_CATEGORY, CUEBALL_CATEGORY, CUE_CATEGORY } from './physics/collision'
 
 const engine = Engine.create()
 engine.world.gravity.x = 0
@@ -6,30 +8,60 @@ engine.world.gravity.y = 0
 
 const render = Render.create({
   element: document.body,
-  engine
+  engine,
+  options: {
+    wireframes: false
+  }
 })
 
-const tableCategory = 0x0001
-const ballCategory = 0x0002
-const cueBallCategory = 0x0004
-const cueCategory = 0x0008
+let tableLeft = Bodies.rectangle(85, 300, 10, 320, { isStatic: true, restitution: 1, collisionFilter: { category: TABLE_CATEGORY, mask: BALL_CATEGORY | CUEBALL_CATEGORY } })
+let tableRight = Bodies.rectangle(715, 300, 10, 320, { isStatic: true, restitution: 1, collisionFilter: { category: TABLE_CATEGORY, mask: BALL_CATEGORY | CUEBALL_CATEGORY } })
+let tableTop = Bodies.rectangle(400, 145, 640, 10, { isStatic: true, restitution: 1, collisionFilter: { category: TABLE_CATEGORY, mask: BALL_CATEGORY | CUEBALL_CATEGORY } })
+let tableBottom = Bodies.rectangle(400, 455, 640, 10, { isStatic: true, restitution: 1, collisionFilter: { category: TABLE_CATEGORY, mask: BALL_CATEGORY | CUEBALL_CATEGORY } })
 
-let tableLeft = Bodies.rectangle(100, 300, 20, 420, { isStatic: true, restitution: 1, collisionFilter: { category: tableCategory, mask: ballCategory | cueBallCategory } })
-let tableRight = Bodies.rectangle(700, 300, 20, 420, { isStatic: true, restitution: 1, collisionFilter: { category: tableCategory, mask: ballCategory | cueBallCategory } })
-let tableTop = Bodies.rectangle(400, 100, 620, 20, { isStatic: true, restitution: 1, collisionFilter: { category: tableCategory, mask: ballCategory | cueBallCategory } })
-let tableBottom = Bodies.rectangle(400, 500, 620, 20, { isStatic: true, restitution: 1, collisionFilter: { category: tableCategory, mask: ballCategory | cueBallCategory } })
+const blackPosX = 560
+const blackPosY = 300
+const ballRadius = 10
 
-let ball1 = Bodies.circle(400, 300, 10, { restitution: 0.75, collisionFilter: { category: ballCategory, mask: tableCategory | ballCategory | cueBallCategory } })
-let ball2 = Bodies.circle(450, 300, 10, { restitution: 0.75, collisionFilter: { category: ballCategory, mask: tableCategory | ballCategory | cueBallCategory } })
+let blackBall = new Ball('black', 560, 300)
+let cueBall = new Ball('white', 210, 300)
 
-let cueBall = Bodies.circle(200, 300, 9, { restitution: 0.75, collisionFilter: { category: cueBallCategory, mask: tableCategory | ballCategory } })
-let cue = Bodies.rectangle(200, 200, 150, 5, { restitution: 0, collisionFilter: { category: cueCategory } })
+let redBalls = [
+  new Ball('red', blackPosX - (2 * ballRadius), blackPosY - ballRadius),
+  new Ball('red', blackPosX - (4 * ballRadius), blackPosY),
+  new Ball('red', blackPosX, blackPosY + (2 * ballRadius)),
+  new Ball('red', blackPosX + (2 * ballRadius), blackPosY - (3 * ballRadius)),
+  new Ball('red', blackPosX + (2 * ballRadius), blackPosY + ballRadius),
+  new Ball('red', blackPosX + (4 * ballRadius), blackPosY - (2 * ballRadius)),
+  new Ball('red', blackPosX + (4 * ballRadius), blackPosY + (4 * ballRadius))
+]
+let yellowBalls = [
+  new Ball('yellow', blackPosX - (2 * ballRadius), blackPosY + ballRadius),
+  new Ball('yellow', blackPosX, blackPosY + (2 * ballRadius)),
+  new Ball('yellow', blackPosX + (2 * ballRadius), blackPosY + ballRadius),
+  new Ball('yellow', blackPosX + (2 * ballRadius), blackPosY - (3 * ballRadius)),
+  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY),
+  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY + (4 * ballRadius)),
+  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY - (2 * ballRadius))
+]
 
-World.add(engine.world, [tableLeft, tableRight, tableTop, tableBottom, ball1, ball2, cueBall, cue])
+let cue = Bodies.rectangle(200, 200, 150, 5, { restitution: 0, collisionFilter: { category: CUE_CATEGORY } })
+
+World.add(engine.world, [
+  tableLeft,
+  tableRight,
+  tableTop,
+  tableBottom,
+  cueBall.physicsObject,
+  cue,
+  blackBall.physicsObject,
+  ...redBalls.map(ball => ball.physicsObject),
+  ...yellowBalls.map(ball => ball.physicsObject)
+])
 
 const mouse = Mouse.create(document.body)
 mouse.element.addEventListener('mousemove', () => {
-  let cueBallPosition = cueBall.position
+  let cueBallPosition = cueBall.physicsObject.position
   let mousePosition = mouse.position
 
   let vectorDiff = Vector.sub(cueBallPosition, mousePosition)
@@ -41,11 +73,11 @@ mouse.element.addEventListener('mousemove', () => {
   Body.setAngle(cue, cueAngle)
 })
 mouse.element.addEventListener('click', () => {
-  let vectorDiff = Vector.sub(cueBall.position, cue.position)
+  let vectorDiff = Vector.sub(cueBall.physicsObject.position, cue.position)
   let normalisedDiff = Vector.normalise(vectorDiff)
-  let force = Vector.mult(normalisedDiff, 0.02)
+  let force = Vector.mult(normalisedDiff, 0.012)
 
-  Body.applyForce(cueBall, cue.position, force)
+  Body.applyForce(cueBall.physicsObject, cue.position, force)
 })
 
 Engine.run(engine)
