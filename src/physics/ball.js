@@ -19,7 +19,7 @@ class Ball {
 
   createPhysicsObject (x, y) {
     return Bodies.circle(x, y, this.colour === 'white' ? 7.5 : 8, {
-      density: 0.002,
+      density: 0.001,
       restitution: 0.75,
       collisionFilter: {
         category: BALL_CATEGORY,

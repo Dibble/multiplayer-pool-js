@@ -21,7 +21,7 @@ let tableBottom = Bodies.rectangle(400, 455, 640, 10, { isStatic: true, restitut
 
 const blackPosX = 560
 const blackPosY = 300
-const ballRadius = 10
+const ballRadius = 8
 
 let blackBall = new Ball('black', 560, 300)
 let cueBall = new Ball('white', 210, 300)
@@ -37,12 +37,12 @@ let redBalls = [
 ]
 let yellowBalls = [
   new Ball('yellow', blackPosX - (2 * ballRadius), blackPosY + ballRadius),
-  new Ball('yellow', blackPosX, blackPosY + (2 * ballRadius)),
-  new Ball('yellow', blackPosX + (2 * ballRadius), blackPosY + ballRadius),
-  new Ball('yellow', blackPosX + (2 * ballRadius), blackPosY - (3 * ballRadius)),
+  new Ball('yellow', blackPosX, blackPosY - (2 * ballRadius)),
+  new Ball('yellow', blackPosX + (2 * ballRadius), blackPosY - ballRadius),
+  new Ball('yellow', blackPosX + (2 * ballRadius), blackPosY + (3 * ballRadius)),
   new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY),
-  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY + (4 * ballRadius)),
-  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY - (2 * ballRadius))
+  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY - (4 * ballRadius)),
+  new Ball('yellow', blackPosX + (4 * ballRadius), blackPosY + (2 * ballRadius))
 ]
 
 let cue = Bodies.rectangle(200, 200, 150, 5, { restitution: 0, collisionFilter: { category: CUE_CATEGORY } })
