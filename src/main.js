@@ -6,11 +6,13 @@ const engine = Engine.create()
 engine.world.gravity.x = 0
 engine.world.gravity.y = 0
 
+const canvas = document.getElementById('canvas')
 const render = Render.create({
-  element: document.body,
+  canvas,
   engine,
   options: {
-    wireframes: false
+    wireframes: false,
+    background: '#046300'
   }
 })
 
@@ -52,32 +54,43 @@ World.add(engine.world, [
   tableRight,
   tableTop,
   tableBottom,
-  cueBall.physicsObject,
+  cueBall._physicsObject,
   cue,
-  blackBall.physicsObject,
-  ...redBalls.map(ball => ball.physicsObject),
-  ...yellowBalls.map(ball => ball.physicsObject)
+  blackBall._physicsObject,
+  ...redBalls.map(ball => ball._physicsObject),
+  ...yellowBalls.map(ball => ball._physicsObject)
 ])
 
-const mouse = Mouse.create(document.body)
+let gameState = 'aim'
+
+const mouse = Mouse.create(canvas)
 mouse.element.addEventListener('mousemove', () => {
-  let cueBallPosition = cueBall.physicsObject.position
-  let mousePosition = mouse.position
+  if (gameState === 'aim') {
+    let cueBallPosition = cueBall.getPosition()
+    let mousePosition = mouse.position
 
-  let vectorDiff = Vector.sub(cueBallPosition, mousePosition)
-  let normalisedDiff = Vector.normalise(vectorDiff)
-  let newCueVector = Vector.add(Vector.mult(normalisedDiff, -100), cueBallPosition)
-  let cueAngle = Vector.angle(cueBallPosition, mousePosition)
+    let vectorDiff = Vector.sub(cueBallPosition, mousePosition)
+    let normalisedDiff = Vector.normalise(vectorDiff)
+    let newCueVector = Vector.add(Vector.mult(normalisedDiff, -100), cueBallPosition)
+    let cueAngle = Vector.angle(cueBallPosition, mousePosition)
 
-  Body.setPosition(cue, { x: newCueVector.x, y: newCueVector.y })
-  Body.setAngle(cue, cueAngle)
+    Body.setPosition(cue, { x: newCueVector.x, y: newCueVector.y })
+    Body.setAngle(cue, cueAngle)
+  } else if (![cueBall, blackBall, ...yellowBalls, ...redBalls].some(ball => ball.getSpeed() > 0.005)) {
+    gameState = 'aim'
+    cue.render.visible = true
+  }
 })
 mouse.element.addEventListener('click', () => {
-  let vectorDiff = Vector.sub(cueBall.physicsObject.position, cue.position)
-  let normalisedDiff = Vector.normalise(vectorDiff)
-  let force = Vector.mult(normalisedDiff, 0.012)
+  if (gameState === 'aim') {
+    let vectorDiff = Vector.sub(cueBall.getPosition(), cue.position)
+    let normalisedDiff = Vector.normalise(vectorDiff)
+    let force = Vector.mult(normalisedDiff, 0.006)
 
-  Body.applyForce(cueBall.physicsObject, cue.position, force)
+    Body.applyForce(cueBall._physicsObject, cue.position, force)
+    gameState = 'shot'
+    cue.render.visible = false
+  }
 })
 
 Engine.run(engine)
