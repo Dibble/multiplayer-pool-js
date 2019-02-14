@@ -13,7 +13,7 @@ const render = Render.create({
   engine,
   options: {
     wireframes: false,
-    background: '#046300'
+    background: '#2f2a46'
   }
 })
 
@@ -22,9 +22,9 @@ let cue = new Cue(200, 200)
 let table = new Table()
 
 World.add(engine.world, [
-  cueBall.physicsObject,
   ...table.physicsObjects,
   ...balls.map(ball => ball.physicsObject),
+  cueBall.physicsObject,
   cue.physicsObject
 ])
 
