@@ -1,5 +1,5 @@
 import { Engine, Render, World, Mouse, Vector, Body } from 'matter-js'
-import Ball from './physics/ball'
+import { initialiseBalls } from './physics/ball'
 import Table from './physics/table'
 import Cue from './physics/cue'
 
@@ -17,42 +17,15 @@ const render = Render.create({
   }
 })
 
-const blackPosX = 560
-const blackPosY = 300
-const ballRadius = 8
-
-let blackBall = new Ball(560, 300, 'black')
-let cueBall = new Ball(210, 300, 'white')
-
-let redBalls = [
-  new Ball(blackPosX - (2 * ballRadius), blackPosY - ballRadius, 'red'),
-  new Ball(blackPosX - (4 * ballRadius), blackPosY, 'red'),
-  new Ball(blackPosX, blackPosY + (2 * ballRadius), 'red'),
-  new Ball(blackPosX + (2 * ballRadius), blackPosY - (3 * ballRadius), 'red'),
-  new Ball(blackPosX + (2 * ballRadius), blackPosY + ballRadius, 'red'),
-  new Ball(blackPosX + (4 * ballRadius), blackPosY - (2 * ballRadius), 'red'),
-  new Ball(blackPosX + (4 * ballRadius), blackPosY + (4 * ballRadius), 'red')
-]
-let yellowBalls = [
-  new Ball(blackPosX - (2 * ballRadius), blackPosY + ballRadius, 'yellow'),
-  new Ball(blackPosX, blackPosY - (2 * ballRadius), 'yellow'),
-  new Ball(blackPosX + (2 * ballRadius), blackPosY - ballRadius, 'yellow'),
-  new Ball(blackPosX + (2 * ballRadius), blackPosY + (3 * ballRadius), 'yellow'),
-  new Ball(blackPosX + (4 * ballRadius), blackPosY, 'yellow'),
-  new Ball(blackPosX + (4 * ballRadius), blackPosY - (4 * ballRadius), 'yellow'),
-  new Ball(blackPosX + (4 * ballRadius), blackPosY + (2 * ballRadius), 'yellow')
-]
-
+let [cueBall, ...balls] = initialiseBalls({ x: 210, y: 300 }, { x: 560, y: 300 }, 8)
 let cue = new Cue(200, 200)
 let table = new Table()
 
 World.add(engine.world, [
-  ...table.physicsObjects,
   cueBall.physicsObject,
-  cue.physicsObject,
-  blackBall.physicsObject,
-  ...redBalls.map(ball => ball.physicsObject),
-  ...yellowBalls.map(ball => ball.physicsObject)
+  ...table.physicsObjects,
+  ...balls.map(ball => ball.physicsObject),
+  cue.physicsObject
 ])
 
 let gameState = 'aim'
@@ -70,7 +43,7 @@ mouse.element.addEventListener('mousemove', () => {
 
     cue.setPosition({ x: newCueVector.x, y: newCueVector.y })
     cue.setAngle(cueAngle)
-  } else if (![cueBall, blackBall, ...yellowBalls, ...redBalls].some(ball => ball.getSpeed() > 0.005)) {
+  } else if (![cueBall, ...balls].some(ball => ball.getSpeed() > 0.005)) {
     gameState = 'aim'
     cue.setVisible(true)
   }

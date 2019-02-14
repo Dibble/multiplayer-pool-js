@@ -9,7 +9,7 @@ const colours = {
   'yellow': '#FFFA00',
 }
 
-class Ball extends PhysicsObject {
+export class Ball extends PhysicsObject {
   _createPhysicsObject (x, y, colour) {
     return Bodies.polygon(x, y, 300, this.colour === 'white' ? 7.5 : 8, {
       density: 0.01,
@@ -27,4 +27,30 @@ class Ball extends PhysicsObject {
   }
 }
 
-export default Ball
+export const initialiseBalls = (cueBallPosition, blackPosition, ballRadius) => {
+  let [blackPosX, blackPosY] = [blackPosition.x, blackPosition.y]
+
+  let blackBall = new Ball(blackPosX, blackPosY, 'black')
+  let cueBall = new Ball(cueBallPosition.x, cueBallPosition.y, 'white')
+
+  let redBalls = [
+    new Ball(blackPosX - (2 * ballRadius), blackPosY - ballRadius, 'red'),
+    new Ball(blackPosX - (4 * ballRadius), blackPosY, 'red'),
+    new Ball(blackPosX, blackPosY + (2 * ballRadius), 'red'),
+    new Ball(blackPosX + (2 * ballRadius), blackPosY - (3 * ballRadius), 'red'),
+    new Ball(blackPosX + (2 * ballRadius), blackPosY + ballRadius, 'red'),
+    new Ball(blackPosX + (4 * ballRadius), blackPosY - (2 * ballRadius), 'red'),
+    new Ball(blackPosX + (4 * ballRadius), blackPosY + (4 * ballRadius), 'red')
+  ]
+  let yellowBalls = [
+    new Ball(blackPosX - (2 * ballRadius), blackPosY + ballRadius, 'yellow'),
+    new Ball(blackPosX, blackPosY - (2 * ballRadius), 'yellow'),
+    new Ball(blackPosX + (2 * ballRadius), blackPosY - ballRadius, 'yellow'),
+    new Ball(blackPosX + (2 * ballRadius), blackPosY + (3 * ballRadius), 'yellow'),
+    new Ball(blackPosX + (4 * ballRadius), blackPosY, 'yellow'),
+    new Ball(blackPosX + (4 * ballRadius), blackPosY - (4 * ballRadius), 'yellow'),
+    new Ball(blackPosX + (4 * ballRadius), blackPosY + (2 * ballRadius), 'yellow')
+  ]
+
+  return [cueBall, blackBall, ...redBalls, ...yellowBalls]
+}
