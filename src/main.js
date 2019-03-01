@@ -3,6 +3,8 @@ import { initialiseBalls } from './physics/ball'
 import Table from './physics/table'
 import Cue from './physics/cue'
 
+global.decomp = require('poly-decomp')
+
 const engine = Engine.create()
 engine.world.gravity.x = 0
 engine.world.gravity.y = 0
@@ -43,7 +45,7 @@ mouse.element.addEventListener('mousemove', () => {
 
     cue.setPosition({ x: newCueVector.x, y: newCueVector.y })
     cue.setAngle(cueAngle)
-  } else if (![cueBall, ...balls].some(ball => ball.getSpeed() > 0.005)) {
+  } else if ([cueBall, ...balls].every(ball => ball.getSpeed() <= 0.005)) {
     gameState = 'aim'
     cue.setVisible(true)
   }
