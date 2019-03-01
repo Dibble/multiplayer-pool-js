@@ -1,5 +1,6 @@
 import { Engine, Render, World, Mouse, Vector, Body } from 'matter-js'
 import { initialiseBalls } from './physics/ball'
+import { createPockets } from './physics/pocket'
 import Table from './physics/table'
 import Cue from './physics/cue'
 
@@ -22,12 +23,14 @@ const render = Render.create({
 let [cueBall, ...balls] = initialiseBalls({ x: 210, y: 300 }, { x: 560, y: 300 }, 8)
 let cue = new Cue(200, 200)
 let table = new Table()
+let pockets = createPockets()
 
 World.add(engine.world, [
   ...table.physicsObjects,
   ...balls.map(ball => ball.physicsObject),
   cueBall.physicsObject,
-  cue.physicsObject
+  cue.physicsObject,
+  ...pockets.map(p => p.physicsObject)
 ])
 
 let gameState = 'aim'

@@ -22,7 +22,8 @@ export class Ball extends PhysicsObject {
       },
       render: {
         fillStyle: colours[colour]
-      }
+      },
+      slop: 0
     })
   }
 }
