@@ -10,6 +10,12 @@ const colours = {
 }
 
 export class Ball extends PhysicsObject {
+  constructor (x, y, colour) {
+    super(x, y, colour)
+
+    this.potted = false
+  }
+
   _createPhysicsObject (x, y, colour) {
     return Bodies.polygon(x, y, 300, this.colour === 'white' ? 7.5 : 8, {
       density: 0.01,
@@ -23,7 +29,8 @@ export class Ball extends PhysicsObject {
       render: {
         fillStyle: colours[colour]
       },
-      slop: 0
+      slop: 0,
+      label: `${colour} ball`
     })
   }
 }

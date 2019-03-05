@@ -1,4 +1,4 @@
-import { Engine, Render, World, Mouse, Vector, Body } from 'matter-js'
+import { Engine, Render, World, Mouse, Vector, Body, Events, Bounds } from 'matter-js'
 import { initialiseBalls } from './physics/ball'
 import { createPockets } from './physics/pocket'
 import Table from './physics/table'
@@ -20,17 +20,18 @@ const render = Render.create({
   }
 })
 
-let [cueBall, ...balls] = initialiseBalls({ x: 210, y: 300 }, { x: 560, y: 300 }, 8)
+let allBalls = initialiseBalls({ x: 210, y: 300 }, { x: 560, y: 300 }, 8)
+let [cueBall, ...balls] = allBalls
 let cue = new Cue(200, 200)
 let table = new Table()
 let pockets = createPockets()
 
 World.add(engine.world, [
   ...table.physicsObjects,
+  ...pockets.map(p => p.physicsObject),
   ...balls.map(ball => ball.physicsObject),
   cueBall.physicsObject,
-  cue.physicsObject,
-  ...pockets.map(p => p.physicsObject)
+  cue.physicsObject
 ])
 
 let gameState = 'aim'
@@ -48,7 +49,7 @@ mouse.element.addEventListener('mousemove', () => {
 
     cue.setPosition({ x: newCueVector.x, y: newCueVector.y })
     cue.setAngle(cueAngle)
-  } else if ([cueBall, ...balls].every(ball => ball.getSpeed() <= 0.005)) {
+  } else if ([cueBall, ...balls].every(ball => !ball.potted && ball.getSpeed() <= 0.005)) {
     gameState = 'aim'
     cue.setVisible(true)
   }
@@ -63,6 +64,35 @@ mouse.element.addEventListener('click', () => {
     gameState = 'shot'
     cue.setVisible(false)
   }
+})
+
+Events.on(engine, 'collisionActive', (event) => {
+  event.pairs
+    .filter(({ bodyA, bodyB }) => bodyA.label === 'pocket' || bodyB.label === 'pocket')
+    .filter(({ bodyA, bodyB }) => {
+      if (bodyA.label === 'pocket') {
+        if (Bounds.contains(bodyA.bounds, bodyB.position)) return true
+      } else {
+        if (Bounds.contains(bodyB.bounds, bodyA.position)) return true
+      }
+
+      return false
+    })
+    .forEach(({ bodyA, bodyB }) => {
+      let pottedBallId = ''
+
+      if (bodyA.label === 'pocket') {
+        pottedBallId = bodyB.id
+      }
+      else {
+        pottedBallId = bodyA.id
+      }
+
+      let pottedBall = allBalls.find(ball => ball.id === pottedBallId)
+      pottedBall.potted = true
+
+      World.remove(engine.world, pottedBall.physicsObject)
+    })
 })
 
 Engine.run(engine)

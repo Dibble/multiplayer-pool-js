@@ -6,12 +6,14 @@ class PhysicsObject {
     this.getPosition = this.getPosition.bind(this)
     this.setPosition = this.setPosition.bind(this)
     this.getSpeed = this.getSpeed.bind(this)
+    this.setSpeed = this.setSpeed.bind(this)
     this.setAngle = this.setAngle.bind(this)
     this.setVisible = this.setVisible.bind(this)
 
     this.colour = colour
 
     this.physicsObject = this._createPhysicsObject(x, y, colour)
+    this.id = this.physicsObject.id
   }
 
   getPosition () {
@@ -24,6 +26,10 @@ class PhysicsObject {
 
   getSpeed () {
     return this.physicsObject.speed
+  }
+
+  setSpeed (newSpeed) {
+    this.physicsObject.setSpeed(newSpeed)
   }
 
   setAngle (newAngle) {
