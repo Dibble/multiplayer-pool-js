@@ -36,22 +36,23 @@ World.add(engine.world, [
 
 let gameState = 'aim'
 
+const updateCuePosition = () => {
+  let cueBallPosition = cueBall.getPosition()
+  let mousePosition = mouse.position
+
+  let vectorDiff = Vector.sub(cueBallPosition, mousePosition)
+  let normalisedDiff = Vector.normalise(vectorDiff)
+  let newCueVector = Vector.add(Vector.mult(normalisedDiff, -100), cueBallPosition)
+  let cueAngle = Vector.angle(cueBallPosition, mousePosition)
+
+  cue.setPosition({ x: newCueVector.x, y: newCueVector.y })
+  cue.setAngle(cueAngle)
+}
+
 const mouse = Mouse.create(canvas)
 mouse.element.addEventListener('mousemove', () => {
   if (gameState === 'aim') {
-    let cueBallPosition = cueBall.getPosition()
-    let mousePosition = mouse.position
-
-    let vectorDiff = Vector.sub(cueBallPosition, mousePosition)
-    let normalisedDiff = Vector.normalise(vectorDiff)
-    let newCueVector = Vector.add(Vector.mult(normalisedDiff, -100), cueBallPosition)
-    let cueAngle = Vector.angle(cueBallPosition, mousePosition)
-
-    cue.setPosition({ x: newCueVector.x, y: newCueVector.y })
-    cue.setAngle(cueAngle)
-  } else if ([cueBall, ...balls].every(ball => ball.getSpeed() <= 0.005)) {
-    gameState = 'aim'
-    cue.setVisible(true)
+    updateCuePosition()
   }
 })
 mouse.element.addEventListener('click', () => {
@@ -70,6 +71,12 @@ Events.on(engine, 'afterUpdate', () => {
   allBalls
     .filter(ball => ball.potted || (ball.getSpeed() > 0 && ball.getSpeed() <= 0.005))
     .forEach(ball => ball.setSpeed(0))
+
+  if ([cueBall, ...balls].every(ball => ball.getSpeed() <= 0.005)) {
+    gameState = 'aim'
+    updateCuePosition()
+    cue.setVisible(true)
+  }
 })
 
 Events.on(engine, 'collisionActive', event => {

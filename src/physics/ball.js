@@ -20,7 +20,7 @@ export class Ball extends PhysicsObject {
     return Bodies.polygon(x, y, 300, this.colour === 'white' ? 7.5 : 8, {
       density: 0.01,
       frictionAir: 0.002,
-      frictionStatic: 0.05,
+      frictionStatic: 0,
       restitution: 1,
       collisionFilter: {
         category: BALL_CATEGORY,

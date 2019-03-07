@@ -3,6 +3,7 @@ import { TABLE_CATEGORY, BALL_CATEGORY, CUEBALL_CATEGORY, NONE_CATEGORY } from '
 
 const cushionOptions = {
   isStatic: true,
+  frictionStatic: 0,
   restitution: 1,
   collisionFilter: {
     category: TABLE_CATEGORY,
