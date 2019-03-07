@@ -49,7 +49,7 @@ mouse.element.addEventListener('mousemove', () => {
 
     cue.setPosition({ x: newCueVector.x, y: newCueVector.y })
     cue.setAngle(cueAngle)
-  } else if ([cueBall, ...balls].every(ball => !ball.potted && ball.getSpeed() <= 0.005)) {
+  } else if ([cueBall, ...balls].every(ball => ball.getSpeed() <= 0.005)) {
     gameState = 'aim'
     cue.setVisible(true)
   }
@@ -66,7 +66,13 @@ mouse.element.addEventListener('click', () => {
   }
 })
 
-Events.on(engine, 'collisionActive', (event) => {
+Events.on(engine, 'afterUpdate', () => {
+  allBalls
+    .filter(ball => ball.potted || (ball.getSpeed() > 0 && ball.getSpeed() <= 0.005))
+    .forEach(ball => ball.setSpeed(0))
+})
+
+Events.on(engine, 'collisionActive', event => {
   event.pairs
     .filter(({ bodyA, bodyB }) => bodyA.label === 'pocket' || bodyB.label === 'pocket')
     .filter(({ bodyA, bodyB }) => {

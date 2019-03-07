@@ -1,4 +1,4 @@
-import { Body } from 'matter-js'
+import { Body, Vector } from 'matter-js'
 
 class PhysicsObject {
   constructor (x, y, colour) {
@@ -29,7 +29,7 @@ class PhysicsObject {
   }
 
   setSpeed (newSpeed) {
-    this.physicsObject.setSpeed(newSpeed)
+    Body.setVelocity(this.physicsObject, Vector.mult(Vector.normalise(this.physicsObject.velocity), newSpeed))
   }
 
   setAngle (newAngle) {
